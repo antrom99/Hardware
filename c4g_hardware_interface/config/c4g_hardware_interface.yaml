@@ -1,0 +1,16 @@
+# Settings for ros_control control loop
+$(arg namespace):
+   hardware_control_loop:
+      loop_hz: 125
+
+   # Settings for ros_control hardware interface
+   hardware_interface:
+      joints:
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
+      - joint7
+      c4g_port_number: $(env C4G_PORT_NUMBER)

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- The namespace on which the robot's controller managed will be spawned -->
+  <arg name="namespace" default="/"/>
+
+  <!-- Load the pos_joint_traj_arm_controller -->
+  <include file="$(find c4g_hardware_interface)/launch/c4g_ros_control_offline_demo.launch">
+    <arg name="namespace" value="$(arg namespace)"/>
+  </include>
+
+  <!-- Manual sliders for the joint_trajectory_controller -->
+  <node name="rqt_joint_trajectory_controller" pkg="rqt_joint_trajectory_controller"
+    type="rqt_joint_trajectory_controller"/>
+
+</launch>

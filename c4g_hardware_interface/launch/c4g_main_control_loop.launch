@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="load_gripper" default="false"/>
+
+  <!-- The namespace on which the robot's controller managed will be spawned -->
+  <arg name="namespace" default="/"/>
+  <param name="namespace" value="$(arg namespace)"/>
+
+  <!-- Hardware interface configuration -->
+  <rosparam file="$(find c4g_hardware_interface)/config/c4g_hardware_interface.yaml"
+    command="load" subst_value="true"/>
+
+  <group unless="$(eval load_gripper)">
+    <!-- Load URDF, SRDF and joint_limits configuration -->
+    <include file="$(find smartsix_moveit_config)/launch/planning_context.launch" >
+      <arg name="gripper" value="" />
+      <arg name="load_robot_description" value="true" />
+      <arg name="transmission" value="position"/>
+    </include>
+    <!-- Start main control loop for the c4g only -->
+    <node name="c4g_hardware_interface" pkg="c4g_hardware_interface" type="main_loop"
+          ns="$(arg namespace)" output="screen"/>
+  </group>
+
+  <!-- Start main control loop node for both c4g and gripper -->
+  <group if="$(eval load_gripper)">
+
+    <!-- Load URDF, SRDF and joint_limits configuration -->
+    <include file="$(find smartsix_moveit_config)/launch/planning_context.launch" >
+      <arg name="gripper" value="schunk_321" />
+      <arg name="load_robot_description" value="true" />
+      <arg name="transmission" value="position"/>
+    </include>
+
+    <!-- Include the gripper configuration without reloading the robot description  -->
+    <include file="$(find pneumatic_parallel_gripper)/launch/load_pneumatic_parallel_gripper.launch">
+      <arg name="gripper" value="schunk_321"/>
+    </include>
+
+    <!-- Start the main control loop node -->
+    <node name="c4g_with_gripper_main_control_loop" pkg="c4g_hardware_interface" type="main_loop_with_gripper" output="screen" />
+    <!-- Republish the gripper joint states topic to the joint_states topic as needed by MoveIt! when planning for the entire planning group
+         comprising robot and gripper -->
+    <node name="gripper_joint_relay" pkg="topic_tools" type="relay" args="/gripper/joint_states /joint_states" />
+  </group>
+
+</launch>

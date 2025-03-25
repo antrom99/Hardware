@@ -1,0 +1,18 @@
+<launch>
+
+  <!-- Set the name of the bag file present in the bagfiles folder -->
+  <arg name="bagfile_name" default="c4g_master_place_trajectory.bag"/>
+
+  <!-- Bag file containing a trajectory -->
+  <param name="output_path" value="$(find c4g_hardware_interface)/bagfiles"/>
+  <arg name="input_bagfile" default="$(arg output_path)/$(arg bagfile_name)"/>
+
+  <!-- Action topic where to send the trajectory -->
+  <arg name="action_topic" default="/master/pos_joint_traj_arm_controller/follow_joint_trajectory"/>
+  <param name="action_topic" value="$(arg action_topic)" />
+
+  <!-- Start the follow joint trajectory action client -->
+  <node name="follow_joint_trajectory" pkg="follow_joint_trajectory_action_client" type="follow_joint_trajectory"
+    output="screen" args="$(arg input_bagfile)" />
+
+</launch>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- The namespace on which the robot's controller managed will be spawned -->
+  <arg name="namespace" default="/"/>
+
+  <!-- Load the robot URDF, SRDF, joint limits and settings for kinematics -->
+  <include file="$(find smartsix_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <!-- Load controller settings -->
+  <rosparam file="$(find c4g_hardware_interface)/config/c4g_controllers.yaml" command="load" subst_value="true"/>
+
+  <!-- Spawn controller manager -->
+  <node name="ros_control_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="$(arg namespace)" args="joint_state_controller pos_joint_traj_arm_controller"/>
+
+</launch>
